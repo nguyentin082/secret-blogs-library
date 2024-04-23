@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block title %} <title>Edit Blog</title>{% endblock %}
+{% block nav %}
+<li class="nav-item"><a class="nav-link " href={{ url_for('home') }}>Home</a></li>
+<li class="nav-item"><a class="nav-link active" href={{ url_for('create_blog') }}>Create Blog</a></li>
+<li class="nav-item"><a class="nav-link" href={{ url_for('about') }}>About</a></li>
+<li class="nav-item"><a class="nav-link" href={{ url_for('contact') }}>Contact</a></li>
+<li class="nav-item"><a class="nav-link" aria-current="page" href={{ url_for('logout') }}>Logout</a></li>
+
+{% endblock %}
+{% block header %}
+<h1 class="fw-bolder">Edit Blog !!!</h1>
+<p class="lead mb-0">"Insightful Stories, Endless Inspiration"</p>
+{% endblock %}
+{% block content %}
+<!-- Page content-->
+<main class="mb-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <!-- TODO:-Add CKEditor and render the form here -->
+                {{ render_form(form) }}
+            </div>
+        </div>
+    </div>
+    {{ ckeditor.load() }}
+
+</main>
+
+
+
+{% endblock %}

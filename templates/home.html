@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %} <title>Home</title>{% endblock %}
+{% block css_link %}
+<style>
+    .sticky-search-widget {
+        position: sticky;
+        top: 20px;
+        /* Adjust as needed */
+        z-index: 1000;
+        /* Ensure it's above other content */
+    }
+</style>
+{% endblock %}
+{% block nav %}
+<li class="nav-item"><a class="nav-link active" href={{ url_for('home') }}>Home</a></li>
+<li class="nav-item"><a class="nav-link" href={{ url_for('create_blog') }}>Create Blog</a></li>
+<li class="nav-item"><a class="nav-link" href={{ url_for('about') }}>About</a></li>
+<li class="nav-item"><a class="nav-link" href={{ url_for('contact') }}>Contact</a></li>
+<li class="nav-item"><a class="nav-link" aria-current="page" href={{ url_for('logout') }}>Logout</a></li>
+
+{% endblock %}
+{% block header %}
+<h1 class="fw-bolder">Welcome to Secret Blogs Library!</h1>
+<p class="lead mb-0">"Insightful Stories, Endless Inspiration"</p>
+{% endblock %}
+{% block content %}
+<!-- Page content-->
+<div class="container">
+    <div class="row">
+        <!-- Blog entries-->
+        <div class="col-lg-8">
+            <!-- Featured blog post-->
+            {% if posts %}
+            <div class="card mb-4">
+                <a href="#!"><img class="card-img-top" src="{{ posts[-1].bg_img }}" alt="Featured Post Image" /></a>
+                <div class="card-body">
+                    <div class="small text-muted">
+                        {{ posts[-1].date_posted.strftime('%d %B, %Y') }}
+                    </div>
+                    <h2 class="card-title">{{ posts[-1].title }}</h2>
+                    <p class="card-text">{{ posts[-1].subtitle }}</p>
+                    <a class="btn btn-primary" href={{ url_for('view_blog', id=posts[-1].id) }}>Read more →</a>
+                    {% if current_user.id == 1 %}
+                    <a class="btn btn-outline-secondary" href={{ url_for('edit_blog', id=posts[-1].id) }}>Edit this
+                        post ✏️</a>
+                    <a class="btn btn-outline-danger" href={{ url_for('delete_blog', id=posts[-1].id) }}>Delete this
+                        post 🚫</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+
+            <!-- Nested row for non-featured blog posts-->
+            {% if posts %}
+            {% for post in posts[:-1]|reverse %}
+            {% if loop.index0 % 2 == 0 %}
+            <div class="row">
+                {% endif %}
+                <div class="col-lg-6">
+                    <!-- Blog post-->
+                    <div class="card mb-4">
+                        <a href="#!"><img class="card-img-top" src="{{ post.bg_img }}" alt="Post Image" /></a>
+                        <div class="card-body">
+                            <div class="small text-muted">{{ post.date_posted.strftime('%d %B, %Y') }}</div>
+                            <h2 class="card-title h4">{{ post.title }}</h2>
+                            <p class="card-text">{{ post.subtitle }}</p>
+                            <a class="btn btn-primary" href={{ url_for('view_blog', id=post.id) }}>Read more →</a>
+                            {% if current_user.id == 1 %}
+                            <a class="btn btn-outline-secondary mt-2" href={{ url_for('edit_blog', id=post.id) }}>Edit
+                                this post ✏️</a>
+                            <a class="btn btn-outline-danger mt-2" href={{ url_for('delete_blog', id=post.id) }}>Delete
+                                this post 🚫</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% if loop.index % 2 == 0 or loop.last %}
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+
+            <!-- Pagination-->
+            <nav aria-label="Pagination">
+                <hr class="my-0" />
+                <ul class="pagination justify-content-center my-4">
+                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1"
+                            aria-disabled="true">Newer</a></li>
+                    <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#!">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#!">3</a></li>
+                    <li class="page-item disabled"><a class="page-link" href="#!">...</a></li>
+                    <li class="page-item"><a class="page-link" href="#!">15</a></li>
+                    <li class="page-item"><a class="page-link" href="#!">Older</a></li>
+                </ul>
+            </nav>
+        </div>
+        <!-- Side widgets-->
+        <div class="col-lg-4">
+            <!-- Search widget-->
+            <div class="sticky-search-widget">
+                <div class="card mb-4">
+                    <div class="card-header">Search</div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input class="form-control" type="text" placeholder="Enter search term..."
+                                aria-label="Enter search term..." aria-describedby="button-search" />
+                            <button class="btn btn-primary" id="button-search" type="button">Go!</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
