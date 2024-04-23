@@ -186,6 +186,7 @@ def home():
     )
 
 
+
 @app.route("/about")
 @login_required
 def about():
