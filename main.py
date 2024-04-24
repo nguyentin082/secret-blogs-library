@@ -25,12 +25,10 @@ import datetimeformat
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from sqlalchemy.orm import exc
 
-
 app = Flask(__name__)
-SECRET_KEY = os.urandom(32)
-app.config["SECRET_KEY"] = SECRET_KEY
-app.secret_key = SECRET_KEY
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///site.db"
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+app.secret_key = os.environ.get("SECRET_KEY")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_URI", "sqlite:///site.db")
 db = SQLAlchemy(app)
 Bootstrap5(app)
 ckeditor = CKEditor(app)
@@ -52,7 +50,6 @@ class CreatePostForm(FlaskForm):
     bg_img = StringField("Background Image URL", validators=[DataRequired()])
     content = CKEditorField("Content", validators=[DataRequired()])
     submit = SubmitField("Submit")
-
 
 
 class User(UserMixin, db.Model):
@@ -103,7 +100,6 @@ class Comment(db.Model):
     ### Relationships
     comment_author = db.relationship("User", back_populates="comments")
     parent_post = db.relationship("Post", back_populates="comments")
-
 
 
 with app.app_context():
@@ -186,7 +182,6 @@ def home():
     )
 
 
-
 @app.route("/about")
 @login_required
 def about():
@@ -232,6 +227,7 @@ def logout():
     flash("Logged out successfully.")
     return redirect(url_for("login"))
 
+
 @app.route("/blog/<id>", methods=["GET", "POST"])
 @login_required
 def view_blog(id):
@@ -251,7 +247,10 @@ def view_blog(id):
         db.session.commit()
         return redirect(url_for("view_blog", id=id))
 
-    return render_template("blog.html", current_user=g.user, post=post, comments=comments)
+    return render_template(
+        "blog.html", current_user=g.user, post=post, comments=comments
+    )
+
 
 @app.route("/delete/<id>")
 @login_required
@@ -260,7 +259,7 @@ def delete_blog(id):
     post = Post.query.get(id)
     if post:
         # Retrieve all comments associated with the post
-        comments = Comment.query.filter_by(post_id=post.id).all()        
+        comments = Comment.query.filter_by(post_id=post.id).all()
         try:
             # Delete each comment
             for comment in comments:
@@ -274,18 +273,19 @@ def delete_blog(id):
             db.session.rollback()
     return redirect(url_for("home"))
 
+
 @app.route("/edit/<id>", methods=["GET", "POST"])
 @login_required
 def edit_blog(id):
     # Fetch the post with the specified ID from the database
     post = Post.query.get(id)
     form = CreatePostForm(
-        title = post.title,
-        subtitle = post.subtitle,
-        bg_img = post.bg_img,
-        content = post.content,
+        title=post.title,
+        subtitle=post.subtitle,
+        bg_img=post.bg_img,
+        content=post.content,
     )
-    
+
     if form.validate_on_submit():
         post.title = form.title.data
         post.subtitle = form.subtitle.data
