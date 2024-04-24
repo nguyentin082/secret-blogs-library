@@ -21,7 +21,6 @@ from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditorField, CKEditor
 from functools import wraps
 import pytz
-import datetimeformat
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from sqlalchemy.orm import exc
 

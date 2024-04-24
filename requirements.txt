@@ -11,6 +11,8 @@ Flask==3.0.2
 flask-sqlalchemy==3.0.2
 bootstrap-flask
 flask-ckeditor
+flask-login
+SQLAlchemy
 Flask-WTF==1.2.1
 fonttools==4.49.0
 gunicorn==22.0.0
